@@ -1,0 +1,11 @@
+# Ignore environment-specific files
+env/
+*.env
+
+# Ignore SQLite database file
+*.sqlite3
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
