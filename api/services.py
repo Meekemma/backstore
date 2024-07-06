@@ -67,7 +67,8 @@ def get_user_data(validated_data):
     user, created =User.objects.get_or_create(
         email=user_data['email'],
         first_name=user_data.get('given_name'),
-        last_name=user_data.get('family_name')
+        last_name=user_data.get('family_name'),
+        profile_picture= user_data.get('picture')
     )
     if created:
         user.auth_provider = 'google'
@@ -79,5 +80,10 @@ def get_user_data(validated_data):
         'email': user_data['email'],
         'first_name': user_data.get('given_name'),
         'last_name': user_data.get('family_name'),
+        'profile_picture': user_data.get('picture')
     }
     return profile_data
+
+
+
+

@@ -53,6 +53,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     groups = models.ManyToManyField(Group, blank=True)
+    profile_picture = models.ImageField(upload_to='profile_images/', validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])])
     auth_provider = models.CharField(max_length=50, default=AUTH_PROVIDERS.get('email'))
 
     USERNAME_FIELD = 'email'

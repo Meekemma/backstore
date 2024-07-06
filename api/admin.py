@@ -6,7 +6,7 @@ from .models import *
 
 class CustomUserAdmin(UserAdmin):
     model = User
-    list_display = ['id', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser', 'is_verified', 'is_premium', 'get_groups_display', 'auth_provider']
+    list_display = ['id', 'email', 'first_name', 'last_name', 'is_active','profile_picture', 'is_staff', 'is_superuser', 'is_verified', 'is_premium', 'get_groups_display', 'auth_provider']
     search_fields = ['id', 'email', 'first_name', 'last_name']
     list_filter = ['is_premium', 'is_active', 'is_staff', 'is_superuser']
     fieldsets = (
