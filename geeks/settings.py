@@ -226,11 +226,6 @@ AWS_DEFAULT_ACL = None
 AWS_S3_VERIFY = True
 AWS_QUERYSTRING_AUTH = False
 
-# Static files (CSS, JavaScript, etc.)
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_LOCATION = 'static'
-STATIC_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{AWS_LOCATION}/'
-
 # Media files (user uploads)
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 MEDIA_LOCATION = 'media'
@@ -336,3 +331,10 @@ MAILCHIMP_MARKETING_AUDIENCE_ID = '16cf6d24f0'
 STRIPE_PUBLISHABLE_KEY= os.getenv('PUBLISHABLE_KEY')
 STRIPE_SECRET_KEY= os.getenv('SECRET_KEY')
 STRIPE_ENDPOINT_SECRET= os.getenv('ENDPOINT_SECRET')
+
+
+
+BASE_APP_URL = "http://localhost:3000"
+BASE_API_URL = "http://localhost:8000"
+GOOGLE_OAUTH2_CLIENT_ID = os.getenv('YOUR_GOOGLE_OAUTH_CLIENT_ID')
+GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv('YOUR_GOOGLE_OAUTH_CLIENT_SECRET')

@@ -3,7 +3,8 @@ env/
 *.env
 
 # Ignore SQLite database file
-*.sqlite3
+# *.sqlite3
+Dockerfile
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

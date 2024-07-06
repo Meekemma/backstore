@@ -1,25 +1,23 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 import json
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view,permission_classes,parser_classes,renderer_classes
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
 from rest_framework.response import Response
-from .permissions import IsVerified 
-
-from django.contrib.auth.models import Group
-from .serializers import RegisterUserSerializer,changePasswordSerializer,UserProfileSerializer,UserRoleSerializer
-from django.shortcuts import get_object_or_404
+from django.conf import settings
+from django.http import HttpResponse
+from django.contrib.auth import login,logout
+from rest_framework.views import APIView
+from .services import get_user_data
+from .serializers import RegisterUserSerializer,changePasswordSerializer,UserProfileSerializer,UserRoleSerializer,AuthSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
-
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from .models import *
-
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .utils import send_code_to_user,verify_otp
-from django.utils import timezone
+from .utils import send_code_to_user
 from mailchimp_marketing import Client
 from django.conf import settings
 from mailchimp_marketing import Client
@@ -80,6 +78,27 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class =MyTokenObtainPairSerializer 
+
+
+class GoogleLoginApi(APIView):
+    def get(self, request, *args, **kwargs):
+        auth_serializer = AuthSerializer(data=request.GET)
+        auth_serializer.is_valid(raise_exception=True)
+        
+        validated_data = auth_serializer.validated_data
+        user_data = get_user_data(validated_data)
+        
+        user = User.objects.get(email=user_data['email'])
+        login(request, user)
+
+        return redirect(settings.BASE_APP_URL)
+
+
+
+class LogoutApi(APIView):
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return HttpResponse('200')
 
 
 @api_view(['POST'])
