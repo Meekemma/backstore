@@ -32,7 +32,7 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 #     except ValidationError:
 #         return False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['render-geeks-1.onrender.com', '127.0.0.1']
 
 # # Add this line to include IPs that pass the custom validator
 # ALLOWED_HOSTS += [ip for ip in ['10.0.0.0/16'] if validate_ip_in_range(ip)]

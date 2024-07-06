@@ -38,8 +38,12 @@ class UserProfileAdmin(admin.ModelAdmin):
     search_fields = ('user__email', 'first_name', 'last_name', 'email')
     list_filter = ('role', 'date_created', 'date_updated')
 
+
+
 class UserRoleAdmin(admin.ModelAdmin):
     list_display = ('id','name',)
+
+
 
 
 class OneTimePasswordAdmin(admin.ModelAdmin):
