@@ -16,8 +16,8 @@ GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo'
 LOGIN_URL = f'{settings.BASE_APP_URL}/login'
 
 
-# Function to exchange authorization code for access token
-def google_get_access_token(code: str, redirect_uri: str) -> str:
+# Function to exchange authorization code for access and refresh tokens
+def google_get_access_and_refresh_tokens(code: str, redirect_uri: str) -> Dict[str, str]:
     # Data required to get access token
     data = {
         'code': code,
@@ -30,10 +30,9 @@ def google_get_access_token(code: str, redirect_uri: str) -> str:
     # Request to get access token
     response = requests.post(GOOGLE_ACCESS_TOKEN_OBTAIN_URL, data=data)
     if not response.ok:
-        raise ValidationError('Could not get access token from Google.')
-    access_token = response.json()['access_token']
-    
-    return access_token
+        raise ValidationError('Could not get tokens from Google.')
+    tokens = response.json()
+    return tokens
 
 
 # Function to get user information from Google using the access token
@@ -43,10 +42,11 @@ def google_get_user_info(access_token: str) -> Dict[str, Any]:
         raise ValidationError('Could not get access token from Google.')
     return response.json()
 
+
 # Function to handle user data retrieval and user creation
 def get_user_data(validated_data):
     domain = settings.BASE_API_URL
-    redirect_uri = f'{domain}/google-login/'  
+    redirect_uri = f'{domain}/google-login/'
 
     # Extract code and error from the validated data
     code = validated_data.get('code')
@@ -56,19 +56,23 @@ def get_user_data(validated_data):
     if error or not code:
         params = urlencode({'error': error})
         return redirect(f'{LOGIN_URL}?{params}')
-    
+
     # Exchange code for access token
-    access_token = google_get_access_token(code=code, redirect_uri=redirect_uri)  # Changed from redirect_url to redirect_uri
+    tokens = google_get_access_and_refresh_tokens(code=code, redirect_uri=redirect_uri)
+    access_token = tokens['access_token']
+    refresh_token = tokens.get('refresh_token')
 
     # Get user info using the access token
     user_data = google_get_user_info(access_token=access_token)
 
     # Creates user in database if it's their first login
-    user, created =User.objects.get_or_create(
+    user, created = User.objects.get_or_create(
         email=user_data['email'],
-        first_name=user_data.get('given_name'),
-        last_name=user_data.get('family_name'),
-        profile_picture= user_data.get('picture')
+        defaults={
+            'first_name': user_data.get('given_name'),
+            'last_name': user_data.get('family_name'),
+            'profile_picture': user_data.get('picture')
+        }
     )
     if created:
         user.auth_provider = 'google'
@@ -80,10 +84,11 @@ def get_user_data(validated_data):
         'email': user_data['email'],
         'first_name': user_data.get('given_name'),
         'last_name': user_data.get('family_name'),
-        'profile_picture': user_data.get('picture')
+        'profile_picture': user_data.get('picture'),
+        'access_token': access_token,
+        'refresh_token': refresh_token
     }
+
+
+    
     return profile_data
-
-
-
-

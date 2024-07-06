@@ -80,18 +80,26 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class =MyTokenObtainPairSerializer 
 
 
-class GoogleLoginApi(APIView):
-    def get(self, request, *args, **kwargs):
-        auth_serializer = AuthSerializer(data=request.GET)
-        auth_serializer.is_valid(raise_exception=True)
-        
-        validated_data = auth_serializer.validated_data
-        user_data = get_user_data(validated_data)
-        
-        user = User.objects.get(email=user_data['email'])
-        login(request, user)
+@api_view(['GET'])
+def google_login(request):
+    auth_serializer = AuthSerializer(data=request.GET)
+    auth_serializer.is_valid(raise_exception=True)
+    
+    validated_data = auth_serializer.validated_data
+    user_data = get_user_data(validated_data)
+    
+    user = User.objects.get(email=user_data['email'])
+    login(request, user)
+    
+    response_data = {
+        'access_token': user_data['access_token'],
+        'refresh_token': user_data['refresh_token'],
+        'first_name': user_data['first_name'],
+        'last_name': user_data['last_name'],
+        'email': user_data['email']
+    }
 
-        return redirect(settings.BASE_APP_URL)
+    return Response(response_data, status=status.HTTP_200_OK)
 
 
 
