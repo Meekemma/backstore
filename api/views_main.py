@@ -15,6 +15,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from .models import *
+from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .utils import send_code_to_user
@@ -84,16 +85,20 @@ class MyTokenObtainPairView(TokenObtainPairView):
 def google_login(request):
     serializer = AuthSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
-        user_data = get_user_data(serializer.validated_data)
-        response_data = {
-            'access_token': user_data['access_token'],
-            'refresh_token': user_data['refresh_token'],
-            'first_name': user_data['first_name'],
-            'last_name': user_data['last_name'],
-            'email': user_data['email']
-        }
-        return Response(response_data, status=status.HTTP_200_OK)
+        try:
+            user_data = get_user_data(serializer.validated_data)
+            response_data = {
+                'access_token': user_data['access_token'],
+                'refresh_token': user_data['refresh_token'],
+                'first_name': user_data['first_name'],
+                'last_name': user_data['last_name'],
+                'email': user_data['email']
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
+        except ValidationError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     return Response({'error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 

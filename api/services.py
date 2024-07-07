@@ -86,8 +86,10 @@ from urllib.parse import urlencode
 from typing import Dict, Any
 import requests
 from django.contrib.auth import get_user_model
-
 User = get_user_model()
+import logging
+
+logger = logging.getLogger(__name__)
 
 # URLs for Google OAuth2 token exchange and user info
 GOOGLE_ACCESS_TOKEN_OBTAIN_URL = 'https://oauth2.googleapis.com/token'
@@ -97,9 +99,7 @@ GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo'
 LOGIN_URL = f'{settings.BASE_APP_URL}/login'
 
 
-## Function to exchange authorization code for access and refresh tokens
 def google_get_access_and_refresh_tokens(code: str, redirect_uri: str) -> Dict[str, str]:
-    # Data required to get access token
     data = {
         'code': code,
         'client_id': settings.GOOGLE_OAUTH2_CLIENT_ID,
@@ -108,9 +108,9 @@ def google_get_access_and_refresh_tokens(code: str, redirect_uri: str) -> Dict[s
         'grant_type': 'authorization_code'
     }
 
-    # Request to get access token
     response = requests.post(GOOGLE_ACCESS_TOKEN_OBTAIN_URL, data=data)
     if not response.ok:
+        logger.error(f"Failed to obtain tokens from Google: {response.content}")
         raise ValidationError('Could not get tokens from Google.')
     tokens = response.json()
     return tokens
