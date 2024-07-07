@@ -91,6 +91,7 @@ def google_login(request):
     user = User.objects.get(email=user_data['email'])
     login(request, user)
     
+    
     response_data = {
         'access_token': user_data['access_token'],
         'refresh_token': user_data['refresh_token'],
