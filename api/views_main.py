@@ -100,7 +100,8 @@ def google_login(request):
         'refresh_token': user_data['refresh_token'],
         'first_name': user_data['first_name'],
         'last_name': user_data['last_name'],
-        'email': user_data['email']
+        'email': user_data['email'],
+        'id': user_data['id']
     })
     redirect_url = f"{settings.BASE_APP_URL}?{query_params}"
     return redirect(redirect_url)
