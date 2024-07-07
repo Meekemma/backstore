@@ -81,6 +81,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class =MyTokenObtainPairSerializer 
 
 
+
 @api_view(['GET'])
 def google_login(request):
     auth_serializer = AuthSerializer(data=request.GET)

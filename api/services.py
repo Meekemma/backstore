@@ -16,7 +16,7 @@ GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo'
 LOGIN_URL = f'{settings.BASE_APP_URL}/login'
 
 
-# Function to exchange authorization code for access and refresh tokens
+## Function to exchange authorization code for access and refresh tokens
 def google_get_access_and_refresh_tokens(code: str, redirect_uri: str) -> Dict[str, str]:
     # Data required to get access token
     data = {
@@ -24,7 +24,9 @@ def google_get_access_and_refresh_tokens(code: str, redirect_uri: str) -> Dict[s
         'client_id': settings.GOOGLE_OAUTH2_CLIENT_ID,
         'client_secret': settings.GOOGLE_OAUTH2_CLIENT_SECRET,
         'redirect_uri': redirect_uri,
-        'grant_type': 'authorization_code'
+        'grant_type': 'authorization_code',
+        'access_type': 'offline',
+        'prompt': 'consent'
     }
 
     # Request to get access token
@@ -39,12 +41,12 @@ def google_get_access_and_refresh_tokens(code: str, redirect_uri: str) -> Dict[s
 def google_get_user_info(access_token: str) -> Dict[str, Any]:
     response = requests.get(GOOGLE_USER_INFO_URL, params={'access_token': access_token})
     if not response.ok:
-        raise ValidationError('Could not get access token from Google.')
+        raise ValidationError('Could not get user info from Google.')
     return response.json()
 
 
 # Function to handle user data retrieval and user creation
-def get_user_data(validated_data):
+def get_user_data(validated_data: Dict[str, str]) -> Dict[str, str]:
     domain = settings.BASE_API_URL
     redirect_uri = f'{domain}/google-login/'
 
@@ -55,7 +57,7 @@ def get_user_data(validated_data):
     # If there is an error or no code, redirect to login with error parameters
     if error or not code:
         params = urlencode({'error': error})
-        return redirect(f'{LOGIN_URL}?{params}')
+        raise ValidationError('Error or no code provided.')
 
     # Exchange code for access token
     tokens = google_get_access_and_refresh_tokens(code=code, redirect_uri=redirect_uri)
@@ -81,6 +83,7 @@ def get_user_data(validated_data):
 
     # Prepare user profile data
     profile_data = {
+        'id': user.id, 
         'email': user_data['email'],
         'first_name': user_data.get('given_name'),
         'last_name': user_data.get('family_name'),
@@ -89,6 +92,4 @@ def get_user_data(validated_data):
         'refresh_token': refresh_token
     }
 
-
-    
     return profile_data
