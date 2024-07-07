@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view,permission_classes,parser_classes
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
 from rest_framework.response import Response
 from django.conf import settings
+from urllib.parse import urlencode
 from django.http import HttpResponse
 from django.contrib.auth import login,logout
 from rest_framework.views import APIView
@@ -15,7 +16,6 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from .models import *
-from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .utils import send_code_to_user
@@ -23,7 +23,7 @@ from mailchimp_marketing import Client
 from django.conf import settings
 from mailchimp_marketing import Client
 from mailchimp_marketing.api_client import ApiClientError
-
+from django.core.exceptions import ValidationError
 
 # Create your views here.
 
@@ -81,24 +81,28 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class =MyTokenObtainPairSerializer 
 
 
-@api_view(['POST'])
+@api_view(['GET'])
 def google_login(request):
-    serializer = AuthSerializer(data=request.data)
-    if serializer.is_valid(raise_exception=True):
-        try:
-            user_data = get_user_data(serializer.validated_data)
-            response_data = {
-                'access_token': user_data['access_token'],
-                'refresh_token': user_data['refresh_token'],
-                'first_name': user_data['first_name'],
-                'last_name': user_data['last_name'],
-                'email': user_data['email']
-            }
-            return Response(response_data, status=status.HTTP_200_OK)
-        except ValidationError as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    return Response({'error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
+    auth_serializer = AuthSerializer(data=request.GET)
+    auth_serializer.is_valid(raise_exception=True)
+    
+    validated_data = auth_serializer.validated_data
+    
+    try:
+        user_data = get_user_data(validated_data)
+    except ValidationError as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+    # Prepare the redirect URL with tokens as query parameters
+    query_params = urlencode({
+        'access_token': user_data['access_token'],
+        'refresh_token': user_data['refresh_token'],
+        'first_name': user_data['first_name'],
+        'last_name': user_data['last_name'],
+        'email': user_data['email']
+    })
+    redirect_url = f"{settings.BASE_APP_URL}?{query_params}"
+    return redirect(redirect_url)
 
 
 

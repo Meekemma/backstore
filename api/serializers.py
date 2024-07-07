@@ -147,5 +147,5 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class AuthSerializer(serializers.Serializer):
-    code = serializers.CharField(required=False)
+    code = serializers.CharField(required=True)
     error = serializers.CharField(required=False)
