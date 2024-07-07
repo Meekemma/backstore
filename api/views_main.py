@@ -80,27 +80,21 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class =MyTokenObtainPairSerializer 
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def google_login(request):
-    auth_serializer = AuthSerializer(data=request.GET)
-    auth_serializer.is_valid(raise_exception=True)
-    
-    validated_data = auth_serializer.validated_data
-    user_data = get_user_data(validated_data)
-    
-    user = User.objects.get(email=user_data['email'])
-    login(request, user)
-    
-    
-    response_data = {
-        'access_token': user_data['access_token'],
-        'refresh_token': user_data['refresh_token'],
-        'first_name': user_data['first_name'],
-        'last_name': user_data['last_name'],
-        'email': user_data['email']
-    }
+    serializer = AuthSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        user_data = get_user_data(serializer.validated_data)
+        response_data = {
+            'access_token': user_data['access_token'],
+            'refresh_token': user_data['refresh_token'],
+            'first_name': user_data['first_name'],
+            'last_name': user_data['last_name'],
+            'email': user_data['email']
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
+    return Response({'error': 'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
 
-    return Response(response_data, status=status.HTTP_200_OK)
 
 
 

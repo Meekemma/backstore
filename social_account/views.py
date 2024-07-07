@@ -25,7 +25,3 @@ class GoogleSocialAuthView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         data = ((serializer.validated_data)['access_token'])
         return Response(data, status=status.HTTP_200_OK)
-
- {
-     "code":2erfbji475890-pflgkjhye90-e[ptjy653regdhjkflg]
- }
