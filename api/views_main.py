@@ -24,6 +24,7 @@ from django.conf import settings
 from mailchimp_marketing import Client
 from mailchimp_marketing.api_client import ApiClientError
 from django.core.exceptions import ValidationError
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your views here.
 
@@ -75,39 +76,54 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
        
     
-    
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class =MyTokenObtainPairSerializer 
 
 
 
-@api_view(['GET'])
-def google_login(request):
-    auth_serializer = AuthSerializer(data=request.GET)
-    auth_serializer.is_valid(raise_exception=True)
-    
-    validated_data = auth_serializer.validated_data
-    
-    try:
+
+class GoogleLoginApi(APIView):
+    def get(self, request, *args, **kwargs):
+        auth_serializer = AuthSerializer(data=request.GET)
+        auth_serializer.is_valid(raise_exception=True)
+        
+        validated_data = auth_serializer.validated_data
         user_data = get_user_data(validated_data)
-    except ValidationError as e:
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = User.objects.get(email=user_data['email'])
+        login(request, user)
 
-    # Prepare the redirect URL with tokens as query parameters
-    query_params = urlencode({
-        'access_token': user_data['access_token'],
-        'refresh_token': user_data['refresh_token'],
-        'first_name': user_data['first_name'],
-        'last_name': user_data['last_name'],
-        'email': user_data['email'],
-        'id': user_data['id']
-    })
-    redirect_url = f"{settings.BASE_APP_URL}?{query_params}"
-    return redirect(redirect_url)
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+        
+
+        response_data = {
+            'access_token': access_token,
+            'refresh_token': refresh_token,
+            'id':user_data['id'],
+            'email': user_data['email'],
+            'first_name': user_data['first_name'],
+            'last_name': user_data['last_name'],
+            'is_verified': user.is_verified
+        }
+        
+        if settings.BASE_APP_URL:
+            # Add response data to query parameters for the redirect URL
+            query_params = urlencode(response_data)
+            redirect_url = f"{settings.BASE_APP_URL}?{query_params}"
+            return redirect(redirect_url)
+        
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 
+
+class LogoutApi(APIView):
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return HttpResponse('200')
 
 class LogoutApi(APIView):
     def get(self, request, *args, **kwargs):

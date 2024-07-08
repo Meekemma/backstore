@@ -8,12 +8,12 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 # URLs for Google OAuth2 token exchange and user info
 GOOGLE_ACCESS_TOKEN_OBTAIN_URL = 'https://oauth2.googleapis.com/token'
 GOOGLE_USER_INFO_URL = 'https://www.googleapis.com/oauth2/v3/userinfo'
 
-# URL to redirect after login
-LOGIN_URL = f'{settings.BASE_APP_URL}/login'
+
 
 
 ## Function to exchange authorization code for access and refresh tokens
@@ -88,8 +88,6 @@ def get_user_data(validated_data: Dict[str, str]) -> Dict[str, str]:
         'first_name': user_data.get('given_name'),
         'last_name': user_data.get('family_name'),
         'profile_picture': user_data.get('picture'),
-        'access_token': access_token,
-        'refresh_token': refresh_token
     }
 
     return profile_data
