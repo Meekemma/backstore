@@ -31,7 +31,7 @@ urlpatterns = [
     path('ping/', views_main.mailchimp_ping_view, name='ping'), 
 
 
-    path('google-login/', GoogleLoginApi.as_view_main(), name='google-login'),
+    path('google-login/', GoogleLoginApi.as_view(), name='google-login'),
     path('logout/', LogoutApi.as_view(), name='logout'),
 
 ]
