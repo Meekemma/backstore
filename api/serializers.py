@@ -87,10 +87,17 @@ class changePasswordSerializer(serializers.Serializer):
         if len(new_password) <= 6:
             raise serializers.ValidationError("Weak Password")
         
+        
+       
+        return attrs
+
+    def save(self):
+        user = self.context.get('user')
+        new_password = self.validated_data['new_password']
+
         # Set the new password for the user
         user.set_password(new_password)
         user.save()
-        return attrs
 
 
 

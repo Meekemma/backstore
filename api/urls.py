@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views_main
 from . import views_admin
-from .views_main import LogoutApi,GoogleLoginApi
+from .views_main import LogoutApi
 from django_rest_passwordreset.views import reset_password_request_token, reset_password_confirm
 
 from .views_main import MyTokenObtainPairView
@@ -16,6 +16,7 @@ urlpatterns = [
 
     path('api/password_reset/request/', reset_password_request_token, name='reset_password_request_token'),
     path('api/password_reset/confirm/', reset_password_confirm, name='reset_password_confirm'),
+    path('google-login/', views_main.google_login_api, name='google-login'),
 
 
     path('register/', views_main.registerUsers, name='register'),
@@ -31,7 +32,7 @@ urlpatterns = [
     path('ping/', views_main.mailchimp_ping_view, name='ping'), 
 
 
-    path('google-login/', GoogleLoginApi.as_view(), name='google-login'),
+    
     path('logout/', LogoutApi.as_view(), name='logout'),
 
 ]

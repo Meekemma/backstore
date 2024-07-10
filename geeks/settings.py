@@ -4,10 +4,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from django.core.exceptions import ValidationError
-from django.core.validators import validate_ipv4_address
-import ipaddress
-
 from pathlib import Path
 from datetime import timedelta
 
@@ -25,17 +21,8 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-# def validate_ip_in_range(host):
-#     try:
-#         validate_ipv4_address(host)
-#         return ipaddress.ip_address(host) in ipaddress.ip_network('10.0.0.0/16')
-#     except ValidationError:
-#         return False
 
-ALLOWED_HOSTS = ['render-geeks-1.onrender.com', '127.0.0.1']
-
-# # Add this line to include IPs that pass the custom validator
-# ALLOWED_HOSTS += [ip for ip in ['10.0.0.0/16'] if validate_ip_in_range(ip)]
+ALLOWED_HOSTS = ['render-geeks-1.onrender.com','127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -50,7 +37,6 @@ INSTALLED_APPS = [
 
     #APPS
     'api.apps.ApiConfig',
-    'social_account.apps.SocialAccountConfig',
     'geeks_tools.apps.GeeksToolsConfig',
     'blogpost.apps.BlogpostConfig',
     'payment.apps.PaymentConfig',
@@ -60,11 +46,6 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     'storages',
-
-    #social auth
-    'oauth2_provider',
-    'social_django',
-    'drf_social_oauth2',
 
     #Django Rest Framework
     'rest_framework',
@@ -100,10 +81,7 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
-        'drf_social_oauth2.authentication.SocialAuthentication',
     ),
-    
 
 }
 
@@ -180,8 +158,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'social_django.context_processors.backends',
-                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -289,24 +265,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 
 
-AUTHENTICATION_BACKENDS = (
-   'drf_social_oauth2.backends.GoogleIdentityBackend',
-   'drf_social_oauth2.backends.DjangoOAuth2',
-   'django.contrib.auth.backends.ModelBackend',
-   'social_core.backends.google.GoogleOAuth2',
-)
 
-# Google OAuth settings
-GOOGLE_CLIENT_ID = os.getenv('YOUR_GOOGLE_OAUTH_CLIENT_ID')
-GOOGLE_SECRET = os.getenv('YOUR_GOOGLE_OAUTH_CLIENT_SECRET')
-SOCIAL_AUTH_PASSWORD = os.getenv('SOCIAL_AUTH_PASSWORD')
-
-
-
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
-    'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile',
-]
 
 
 #SMTP CONFIGURATION
@@ -334,7 +293,7 @@ STRIPE_ENDPOINT_SECRET= os.getenv('ENDPOINT_SECRET')
 
 
 
-BASE_APP_URL = "http://localhost:3000/callback"
+BASE_APP_URL = "http://localhost:3000"
 BASE_API_URL = "https://render-geeks-1.onrender.com"
 GOOGLE_OAUTH2_CLIENT_ID = os.getenv('YOUR_GOOGLE_OAUTH_CLIENT_ID')
 GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv('YOUR_GOOGLE_OAUTH_CLIENT_SECRET')

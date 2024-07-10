@@ -10,7 +10,6 @@ from urllib.parse import urlencode
 from django.http import HttpResponse
 from django.contrib.auth import login,logout
 from rest_framework.views import APIView
-from .services import get_user_data
 from .serializers import RegisterUserSerializer,changePasswordSerializer,UserProfileSerializer,UserRoleSerializer,AuthSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth import get_user_model
@@ -25,7 +24,12 @@ from mailchimp_marketing import Client
 from mailchimp_marketing.api_client import ApiClientError
 from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
+from .services import get_user_data
 
+import logging
+
+
+logger = logging.getLogger(__name__)
 # Create your views here.
 
 
@@ -40,6 +44,8 @@ mailchimp.set_config({
 def mailchimp_ping_view(request):
     response = mailchimp.ping.get()
     return JsonResponse(response)
+
+
 
 # Custom serializer for obtaining JWT token with additional claims
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -82,27 +88,29 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 
 
-
-class GoogleLoginApi(APIView):
-    def get(self, request, *args, **kwargs):
+@api_view(['GET'])
+def google_login_api(request):
+    try:
         auth_serializer = AuthSerializer(data=request.GET)
         auth_serializer.is_valid(raise_exception=True)
         
         validated_data = auth_serializer.validated_data
+        logger.debug(f'Validated data: {validated_data}')
+        
         user_data = get_user_data(validated_data)
+        logger.debug(f'User data: {user_data}')
         
         user = User.objects.get(email=user_data['email'])
         login(request, user)
-
+        
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
         refresh_token = str(refresh)
         
-
         response_data = {
             'access_token': access_token,
             'refresh_token': refresh_token,
-            'id':user_data['id'],
+            'id': user_data['id'],
             'email': user_data['email'],
             'first_name': user_data['first_name'],
             'last_name': user_data['last_name'],
@@ -110,20 +118,22 @@ class GoogleLoginApi(APIView):
         }
         
         if settings.BASE_APP_URL:
-            # Add response data to query parameters for the redirect URL
             query_params = urlencode(response_data)
             redirect_url = f"{settings.BASE_APP_URL}?{query_params}"
             return redirect(redirect_url)
         
         return Response(response_data, status=status.HTTP_200_OK)
+    
+    except ValidationError as ve:
+        logger.error(f'Validation error: {ve}')
+        return Response({'error': str(ve)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    except Exception as e:
+        logger.error(f'Unexpected error: {e}')
+        return Response({'error': 'Unexpected error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
-
-class LogoutApi(APIView):
-    def get(self, request, *args, **kwargs):
-        logout(request)
-        return HttpResponse('200')
 
 class LogoutApi(APIView):
     def get(self, request, *args, **kwargs):
