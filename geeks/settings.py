@@ -293,7 +293,7 @@ STRIPE_ENDPOINT_SECRET= os.getenv('ENDPOINT_SECRET')
 
 
 
-BASE_APP_URL = "http://localhost:3000"
+BASE_APP_URL = "http://geek.tools/callback"
 BASE_API_URL = "https://render-geeks-1.onrender.com"
 GOOGLE_OAUTH2_CLIENT_ID = os.getenv('YOUR_GOOGLE_OAUTH_CLIENT_ID')
 GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv('YOUR_GOOGLE_OAUTH_CLIENT_SECRET')

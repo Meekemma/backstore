@@ -59,7 +59,7 @@ def update_Profile(sender, instance, created, *args, **kwargs):
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
     
     # send an e-mail to the user
-    custom_url_base = "https://geektools.vercel.app/change-password"
+    custom_url_base = "https://geek.tools/change-password"
     context = {
         'current_user': reset_password_token.user,
         'first_name': reset_password_token.user.first_name,
