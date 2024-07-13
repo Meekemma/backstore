@@ -22,7 +22,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 
-ALLOWED_HOSTS = ['render-geeks-1.onrender.com','127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['django-api-lb-173089160.us-east-1.elb.amazonaws.com','render-geeks-1.onrender.com','127.0.0.1', 'localhost']
 
 
 # Application definition
