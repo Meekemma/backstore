@@ -62,14 +62,14 @@ pydantic_core==2.16.3
 PyJWT==2.8.0
 pyotp==2.9.0
 pyparsing==3.1.2
-# pypiwin32==223
+pypiwin32==223
 PySocks==1.7.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-jose==3.3.0
 python3-openid==3.2.0
 pytz==2024.1
-# pywin32==306
+pywin32==306
 PyYAML==6.0.1
 referencing==0.34.0
 regex==2023.12.25
