@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install django-filters
+# RUN pip install django-filters
 RUN pip install -r requirements.txt
 
 # Copy the current directory contents into the container at /code/
