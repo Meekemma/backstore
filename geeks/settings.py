@@ -22,7 +22,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 
-ALLOWED_HOSTS = ['django-api-lb-173089160.us-east-1.elb.amazonaws.com','render-geeks-1.onrender.com','127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['geekbackend-c73d99faff92.herokuapp.com','render-geeks-1.onrender.com','127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -294,6 +294,6 @@ STRIPE_ENDPOINT_SECRET= os.getenv('ENDPOINT_SECRET')
 
 
 BASE_APP_URL = "http://geek.tools/callback"
-BASE_API_URL = "https://render-geeks-1.onrender.com"
+BASE_API_URL = "https://geekbackend-c73d99faff92.herokuapp.com"
 GOOGLE_OAUTH2_CLIENT_ID = os.getenv('YOUR_GOOGLE_OAUTH_CLIENT_ID')
 GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv('YOUR_GOOGLE_OAUTH_CLIENT_SECRET')
