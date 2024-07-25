@@ -243,10 +243,6 @@ class CombinedToolSerializer(serializers.ModelSerializer):
 
 
 
-
-
-
-
 class CsvToolSerializer(serializers.ModelSerializer):
     class Meta:
         model = CsvTool

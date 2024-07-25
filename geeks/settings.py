@@ -22,7 +22,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 
-ALLOWED_HOSTS = ['geekbackend-c73d99faff92.herokuapp.com','render-geeks-1.onrender.com','127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['geekbackend-c73d99faff92.herokuapp.com','127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -167,7 +167,7 @@ WSGI_APPLICATION = 'geeks.wsgi.application'
 
 
 #Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+#https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     'default': {

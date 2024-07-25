@@ -207,9 +207,9 @@ def bookmark_list_create(request):
 
 @api_view(['GET', 'DELETE'])
 @permission_classes([IsAuthenticated])
-def bookmark_detail(request, pk):
+def bookmark_detail(request, bookmark_id):
     try:
-        bookmark = Bookmark.objects.get(pk=pk, user=request.user)
+        bookmark = Bookmark.objects.get(id=bookmark_id, user=request.user)
     except Bookmark.DoesNotExist:
         return Response({"error": "Bookmark not found"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
@@ -222,9 +222,10 @@ def bookmark_detail(request, pk):
     elif request.method == 'DELETE':
         try:
             bookmark.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({'message': 'Bookmark was successfully deleted'}, status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 
