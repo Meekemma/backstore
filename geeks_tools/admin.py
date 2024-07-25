@@ -99,7 +99,7 @@ admin.site.register(CombinedTool, CombinedToolAdmin)
 
 
 class BookmarkAdmin(admin.ModelAdmin):
-    list_display = ('user', 'combined_tool_info', 'csv_tool_name', 'created_at')
+    list_display = ('id','user', 'combined_tool_info', 'csv_tool_name', 'created_at')
     list_filter = ('user',)
 
     def combined_tool_info(self, obj):
@@ -139,7 +139,7 @@ class BestToolAdmin(admin.ModelAdmin):
 
 # Optional: Create a custom admin class to customize the admin interface
 class CsvToolAdmin(admin.ModelAdmin):
-    list_display = ('name', 'url', 'category', 'subcategory', 'hashtag', 'intro', 'pricing','logo','image1', 'created_by', 'created_at')
+    list_display = ('id','name', 'url', 'category', 'subcategory', 'hashtag', 'intro', 'pricing','logo','image1', 'created_by', 'created_at')
     search_fields = ('name', 'category', 'subcategory', 'tag')
     list_filter = ('category', 'subcategory', 'created_at')
     readonly_fields = ('created_by',)
